@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+<div id="info"> XMas Tree 
+  
+</div>
+<button id='toggle'>OFF
+</button>
+<button id = 'toggle1'>複雜模式:OFF
+
+</button>
+<button id = 'toggle2'>簡單模式:OFF
+
+</button>
+<div>
+  <img src="https://i.imgur.com/3dwJX9g.jpg" style="position:absolute;top:0vw;left:0vw;width:70vw;z-index:-1">
+</div>
+<div>
+  <img src="https://i.imgur.com/gEKY0iD.png" style="position:absolute;top: 1vw;left:30.5vw;width:10vw;height:10vw;z-index:-1">
+</div>
+<div>
+  <img src="https://i.imgur.com/tuQbGGP.png" style="position:absolute;top:41vw;left:18vw;width:20vw;height:15vw;z-index:-1">
+</div>
+<div>
+  <img src="https://i.imgur.com/nr7RYBg.png" style="position:absolute;top:8vw;left:35vw;width:10vw;height:10vw;z-index:-1">
+</div>
+<div>
+  <img src="https://i.imgur.com/DWxxdGP.png" style="position:absolute;top:25vw;left:20vw;width:10vw;height:10vw;z-index:-1">
+</div>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+var _status = false;
+var _complex = false;
+var _simple = false;
+var _power = false;
+$('#toggle').click(function() {
+
+  _status = !_status;
+  if (_status === true) {
+
+    $('#toggle').text('ON');
+  } else {
+
+    $('#toggle').text('OFF');
+
+  }
+});
+$('#toggle1').click(function() {
+
+  _complex = !_complex;
+  if (_complex === true) {
+
+    $('#toggle1').text('複雜模式:ON');
+    $('#toggle2').text('簡單模式:OFF');
+    _simple = false;
+  } else {
+
+    $('#toggle1').text('複雜模式:OFF');
+    if (_simple === false) {
+      $('#toggle').text('OFF');
+      _status = false;
+    }
+  }
+});
+$('#toggle2').click(function() {
+
+  _simple = !_simple;
+  if (_simple === true) {
+    $('#toggle2').text('簡單模式:ON');
+    $('#toggle1').text('複雜模式:OFF');
+    _complex = false;
+  } else {
+
+    $('#toggle2').text('簡單模式:OFF');
+    if (_complex === false) {
+      $('#toggle').text('OFF');
+      _status = false;
+    }
+  }
+});
+
+class Light {
+
+  constructor(x, y) {
+
+    this.element = document.createElement('div');
+
+    this.element.id = 'light';
+
+    this.element.style.cssText = "position:absolute;width:20px;height:20px;border-radius:15px;z-index:1";
+    this.element.style.top = x;
+    this.element.style.left = y;
+
+    this.element.style.background = "hsl(0, 0%, 35%)";
+    document.getElementsByTagName('body')[0].appendChild(this.element);
+  }
+
+  changeColor() {
+
+    var self = this;
+    var hue = Math.random() * 360;
+    var time;
+
+
+    if (time) {
+      window.clearTimeout(time);
+
+    }
+    _power = !_power;
+    if (_complex === false) {
+      time = setTimeout(function() {
+        self.changeColor()
+      }, 500);
+      if (_status === false || _power === false) {
+
+        self.element.style.background = "hsl(0,0%,35%)";
+
+      } else if (_simple === false) {
+        self.element.style.background = "hsl(0,0%,35%)";
+      } else {
+
+
+        self.element.style.background = "hsl(" + hue + ",100%,80%)";
+
+
+      }
+
+    } else {
+
+      time = setTimeout(function() {
+        self.changeColor()
+      }, (Math.random() * 1000) + 1000);
+      if (_status === false || _power === false) {
+
+        self.element.style.background = "hsl(0,0%,35%)";
+
+      } else {
+
+        self.element.style.background = "hsl(" + hue + ",100%,80%)";
+
+      }
+
+    }
+    //setTimeout ( self.changeColor , 1000);  // why this is not working ...
+  }
+
+}
+
+////////////////////////////////
+init();
+
+function init() {
+  var light = new Light('15vw', '32vw');
+  var light1 = new Light('11vw', '34vw');
+  var light2 = new Light('16vw', '37vw');
+  var light3 = new Light('20vw', '30vw');
+  var light4 = new Light('21vw', '35vw');
+  var light5 = new Light('22vw', '40vw');
+  var light6 = new Light('26vw', '28vw');
+  var light7 = new Light('27vw', '33vw');
+  var light8 = new Light('28vw', '38vw');
+  var light9 = new Light('29vw', '43vw');
+  var light10 = new Light('32vw', '26vw');
+  var light11 = new Light('33vw', '31vw');
+  var light12 = new Light('34vw', '36vw');
+  var light13 = new Light('35vw', '41vw');
+  var light14 = new Light('36vw', '45vw');
+  var light15 = new Light('38vw', '24vw');
+  var light16 = new Light('39vw', '28vw');
+  var light17 = new Light('40vw', '33vw');
+  var light18 = new Light('41vw', '37vw');
+  var light19 = new Light('42vw', '41vw');
+  var light20 = new Light('43vw', '45vw');
+  light.changeColor();
+  light1.changeColor();
+  light2.changeColor();
+  light3.changeColor();
+  light4.changeColor();
+  light5.changeColor();
+  light6.changeColor();
+  light7.changeColor();
+  light8.changeColor();
+  light9.changeColor();
+  light10.changeColor();
+  light11.changeColor();
+  light12.changeColor();
+  light13.changeColor();
+  light14.changeColor();
+  light15.changeColor();
+  light16.changeColor();
+  light17.changeColor();
+  light18.changeColor();
+  light19.changeColor();
+  light20.changeColor();
+
+}
+
+
+</script>
+</body>
+
+</html>
