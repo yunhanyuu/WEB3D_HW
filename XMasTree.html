@@ -152,30 +152,56 @@ class Light {
 
 ////////////////////////////////
 init();
-
+var lights = [];
 function init() {
+
+  var lights = [];
   var light = new Light('15vw', '32vw');
+  lights.push(light);
   var light1 = new Light('11vw', '34vw');
+  lights.push(light1);
   var light2 = new Light('16vw', '37vw');
+  lights.push(light2);
   var light3 = new Light('20vw', '30vw');
+  lights.push(light3);
   var light4 = new Light('21vw', '35vw');
+  lights.push(light4);
   var light5 = new Light('22vw', '40vw');
+  lights.push(light5);
   var light6 = new Light('26vw', '28vw');
+  lights.push(light6);
   var light7 = new Light('27vw', '33vw');
+  lights.push(light7);
   var light8 = new Light('28vw', '38vw');
+  lights.push(light8);
   var light9 = new Light('29vw', '43vw');
+  lights.push(light9);
   var light10 = new Light('32vw', '26vw');
+  lights.push(light10);
   var light11 = new Light('33vw', '31vw');
+  lights.push(light11);
   var light12 = new Light('34vw', '36vw');
+  lights.push(light12);
   var light13 = new Light('35vw', '41vw');
+  lights.push(light13);
   var light14 = new Light('36vw', '45vw');
+  lights.push(light14);
   var light15 = new Light('38vw', '24vw');
+  lights.push(light15);
   var light16 = new Light('39vw', '28vw');
+  lights.push(light16);
   var light17 = new Light('40vw', '33vw');
+  lights.push(light17);
   var light18 = new Light('41vw', '37vw');
+  lights.push(light18);
   var light19 = new Light('42vw', '41vw');
+  lights.push(light19);
   var light20 = new Light('43vw', '45vw');
-  light.changeColor();
+  lights.push(light20);
+  lights.forEach(function(light) {
+    light.changeColor();
+  });
+  /*light.changeColor();
   light1.changeColor();
   light2.changeColor();
   light3.changeColor();
@@ -196,7 +222,7 @@ function init() {
   light18.changeColor();
   light19.changeColor();
   light20.changeColor();
-
+*/
 }
 
 
