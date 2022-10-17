@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<h1>  Calculate inner product & vector product</h1>
+
+<style>
+	#vector1{
+	position:relative;
+	border: none;
+	box-shadow: 0 2px 6px ;
+	border-radius: 20px;
+	background-color: rgba(179, 167, 136, 0.4);
+	padding:20px;
+	width:230px;
+	height:230px;
+	top:50px;
+	left:50px;
+	font-size: 18px;
+	}
+	#vector2{
+	position:relative;
+	border: none;
+	box-shadow: 0 2px 6px;
+	border-radius: 20px;
+	background-color: rgba(179, 167, 136, 0.4);
+	padding:20px;
+	width:230px;
+	height:230px;
+	top:150px;
+	left:50px;
+	font-size: 18px;
+	}
+	#solve{
+	position:relative;
+	border: none;
+	box-shadow: 0 2px 6px;
+	border-radius: 20px;
+	background-color: rgba(179, 167, 136, 0.4);
+	padding:20px;
+	width:300px;
+	height:400px;
+	top:-450px;
+	left:400px;
+	font-size: 19px;
+	
+	}
+hr.new1{
+ border: 1px solid gray;
+}
+
+</style>
+</head>
+<body>
+<div style = "position:absolute; background:#f5f5dc	; width:1000px; height:1000px"></div>
+<div id = "vector1">
+<font size=5><b>V</b></font>
+<hr class = "new1"><br>
+<font size=5><b>x</b> </font>&nbsp <input type = 'number' id = 'vx'><br><br><br>
+<font size=5><b>y</b></font> &nbsp <input type = 'number' id = 'vy'><br><br><br>
+<font size=5><b>z</b></font> &nbsp <input type = 'number' id = 'vz'>
+</div>
+<div id = "vector2">
+<font size=5><b>W</b></font>
+<hr class = "new1"><br>
+<font size=5><b>x </b></font>&nbsp <input type = 'number' id = 'wx'><br><br><br>
+<font size=5><b>y </b></font>&nbsp <input type = 'number' id = 'wy'><br><br><br>
+<font size=5><b>z </b></font>&nbsp <input type = 'number' id = 'wz'>
+</div>
+<div id = "solve">
+<font size=5><b>Inner product</b></font>
+<hr class = "new1"><br>
+<font size=5><b>V &#8901 W </b></font>&nbsp <input type = 'number' id = 'vwI'>
+<br><br><br><br>
+<font size=5><b>V &#10799 W &nbsp (vector product)</b></font>
+<hr class = "new1"><br>
+<font size=5><b>X </b></font>&nbsp <input type = 'number' id = 'vwPx'><br><br><br>
+<font size=5><b>Y </b></font>&nbsp <input type = 'number' id = 'vwPy'><br><br><br>
+<font size=5><b>Z </b></font> &nbsp <input type = 'number' id = 'vwPz'>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://threejs.org/build/three.min.js"> </script>
+<script>
+var vx, vy, vz, wx, wy, wz;
+
+function vectorCalculate() {
+  if (!isNaN(vx) & (!isNaN(vy)) & (!isNaN(vz)) & (!isNaN(wx)) & (!isNaN(wy)) & (!isNaN(wz))) {
+    let V = new THREE.Vector3(vx, vy, vz);
+    let W = new THREE.Vector3(wx, wy, wz);
+    let innerProduct = V.dot(W);
+    let crossProduct = V.clone().cross(W);
+    $('#vwI').val(innerProduct);
+    $('#vwPx').val(crossProduct.x);
+    $('#vwPy').val(crossProduct.y);
+    $('#vwPz').val(crossProduct.z);
+  }
+
+}
+$('#vx').change(function() {
+  vx = $('#vx').val();
+  vectorCalculate();
+});
+$('#vy').change(function() {
+  vy = $('#vy').val();
+  vectorCalculate();
+});
+$('#vz').change(function() {
+  vz = $('#vz').val();
+  vectorCalculate();
+});
+$('#wx').change(function() {
+  wx = $('#wx').val();
+  vectorCalculate();
+});
+
+$('#wy').change(function() {
+  wy = $('#wy').val();
+  vectorCalculate();
+});
+$('#wz').change(function() {
+  wz = $('#wz').val();
+  vectorCalculate();
+});
+
+
+
+</script>
+</body>
+
+</html>
