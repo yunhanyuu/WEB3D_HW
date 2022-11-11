@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	
+
+#info {
+	  position: absolute;
+	  top: 10px;
+	  width: 100%;
+
+	  padding: 5px;
+	  text-align: center;
+	  font-size: 20px;
+	  color: #5dc5e0
+	}
+
+	body {
+	  overflow: hidden
+	}
+
+</style>
+</head>
+
+  
+
+<button id='LightPower1'>總電源:開</button>
+<input type=range min=0 max=10 id='LightPower'>亮度</button>
+<button id='switch'>use3rd
+</button>
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+
+
+
+
+<body>
+<h3>視角控制前進方向:上下左右鍵及L(往左看),R(往右看)</h3>
+<a href="https://i.imgur.com/LxDKHKi.jpg">2D平面設計圖</a>
+<script>
+var camera3rd, use3rd = true;
+var keyboard = new KeyboardState();
+var pos = new THREE.Vector3();
+var vel = new THREE.Vector3();
+var force = new THREE.Vector3();
+var power, angle;
+var clock;
+var angle_thrust;
+var _status = true;
+var LightGroup = new THREE.Group();
+/*(function() {
+  Math.clamp = function(val, min, max) {
+    return Math.min(Math.max(val, min), max);
+
+  }
+})();*/
+$('#LightPower1').click(function() {
+
+  _status = !_status;
+  if (_status === true) {
+
+    $('#LightPower1').text('總電源:開');
+  } else {
+
+    $('#LightPower1').text('總電源:關');
+
+  }
+});
+$('#switch').click(function() {
+  use3rd = !use3rd;
+  if (use3rd) $('#switch').text('use3rd');
+  else $('#switch').text('camera3rd');
+})
+
+
+class Lamps {
+  constructor(x, y, z, style, painting, num) {
+    this.powerState = true;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this._status = true;
+
+    if (style === 1) {
+
+      this.Light = new THREE.PointLight(0xdfebe7, 0.3);
+
+      this.Light.position.set(this.x, this.y, this.z);
+      // LightGroup.add(this.Light);
+      scene.add(this.Light);
+
+      let geometry = new THREE.CylinderGeometry(4, 4, 1);
+      let material = new THREE.MeshBasicMaterial({
+        color: 0x888888
+      });
+      var PointLightLamp = new THREE.Mesh(geometry, material);
+      PointLightLamp.position.set(this.x, this.y, this.z);
+      
+      scene.add(PointLightLamp);
+
+      
+
+    } else if (style === 2) {
+      this.Light = new THREE.SpotLight(0xfbe7b4, 1, 110, Math.PI / 2, 1);
+      this.Light.position.set(this.x, this.y, this.z);
+      this.Light.target = painting;
+
+      this.Light.castShadow = true;
+      this.Light.shadow.mapSize.width = 1024;
+      this.Light.shadow.mapSize.height = 1024;
+
+      this.Light.shadow.camera.near = 20;
+      this.Light.shadow.camera.far = 200;
+      //this.Light.shadow.camera.fov = light.angle / Math.PI * 180 * 2;
+
+      //this.spotLight.target = drawing;
+      scene.add(this.Light);
+      //LightGroup.add(this.Light);
+      let geometry = new THREE.CylinderGeometry(2, 4, 5);
+      let material = new THREE.MeshBasicMaterial({
+        color: 0x7B7B7B
+      });
+      var spotLightLamp = new THREE.Mesh(geometry, material);
+      spotLightLamp.position.set(this.x, this.y, this.z);
+      //return spotLightLamp;
+      if (num >= 2 && num <= 4) {
+        spotLightLamp.rotation.set(Math.PI / 6, 0, -Math.PI / 6);
+      } else if (num === 7)
+        spotLightLamp.rotation.set(0, -Math.PI / 2, Math.PI / 6)
+      else if (num === 8)
+        spotLightLamp.rotation.set(Math.PI / 3, Math.PI / 2, 0);
+      else
+        spotLightLamp.rotation.set(0, Math.PI / 2, Math.PI / 6);
+      spotLightLamp.position.copy(this.Light.position);
+      //console.log(painting.position);
+
+      this.Light.lookAt(painting.position);
+
+      scene.add(spotLightLamp);
+
+    }
+
+  }
+  controlLamps(i) {
+    if (i === -1) {
+      if (_status == false)
+        this.Light.intensity = 0;
+      else
+        this.Light.intensity = 1;
+
+    } else {
+      if (_status == true)
+        this.Light.intensity = i / 30;
+      else
+        this.Light.intensity = 0;
+    }
+
+    //this.powerState = ! this.powerState;
+    /*if(this.powerState===true){
+		  this.Light.intensity = 0.3;
+		  scene.add(this.Light);
+		}
+		/*else{
+		  //this.Light.intensity = 0.1;
+      
+		  scene.add(this.Light);
+		}*/
+
+  }
+}
+
+var camera, scene, renderer;
+
+init();
+animate();
+
+function init() {
+
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+  camera3rd = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1000);
+
+  camera.position.set(150, 500, 1000);
+  camera3rd.position.set(-350, 70, 150);
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x888888);
+  //renderer.shadowMap.enabled = true;
+  //renderer.shadowMap.type = THREE.PCFShadowMap;
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  controls.enableKeys = false;
+  document.body.appendChild(renderer.domElement);
+  
+  ///light
+
+  let sunLight = new THREE.DirectionalLight(0xffffff, 0.6); // color, intensity, distance, decay
+  sunLight.position.y = 15;
+  scene.add(sunLight);
+
+  ///Lamps
+  //MainLight1 = new Lamps(-350, 150, -100, 1);
+  MainLight2 = new Lamps(180, 150, -150, 1);
+  MainLight3 = new Lamps(420, 150, 180, 1);
+  MainLight4 = new Lamps(-250, 150, 170, 1);
+  MainLight5 = new Lamps(100, 150, 170, 1);
+
+
+
+  //drawLight1 = new Lamps(-210, 150, 130, 2); 
+
+  $('#LightPower').change(function() {
+    //if(_status==true){
+    //MainLight1.controlLamps($(this).val());
+    MainLight2.controlLamps($(this).val());
+    MainLight3.controlLamps($(this).val());
+    MainLight4.controlLamps($(this).val());
+    MainLight5.controlLamps($(this).val());
+    spotlight1.controlLamps(-1);
+    spotlight2.controlLamps(-1);
+    spotlight3.controlLamps(-1);
+    spotlight4.controlLamps(-1);
+    spotlight5.controlLamps(-1);
+    spotlight6.controlLamps(-1);
+    spotlight7.controlLamps(-1);
+    spotlight8.controlLamps(-1);
+    spotlight9.controlLamps(-1);
+    spotlight10.controlLamps(-1);
+    //}
+
+  });
+
+
+  //light.controlLamps();
+  //scene.add(light);
+
+  ///Chairs
+  var chair = buildChair();
+  var chair1 = chair.clone();
+  chair1.position.set(100, 0, 70);
+  var chair2 = chair.clone();
+  chair2.position.set(470, 0, 70);
+  chair2.rotation.y = Math.PI / 2;
+  var chair3 = chair.clone();
+  chair3.position.set(240, 0, -225);
+  var chair4 = chair.clone();
+  chair4.position.set(-260, 0, 70);
+  scene.add(chair1, chair2, chair3, chair4);
+
+  ///Floor
+  var floor = buildFloor();
+  scene.add(floor);
+
+  ///Walls
+  var wallGroup = new THREE.Group();
+  wallL = buildWalls(500, 120, 10, 2);
+  wallL.rotation.y = Math.PI / 2;
+  wallR = wallL.clone();
+  wallR.rotation.y = -Math.PI / 2;
+  wallL.position.set(-500, 60, 0);
+  wallR.position.set(500, 60, 0);
+  wallB = buildWalls(1000, 120, 10, 2);
+  wallF = wallB.clone();
+  wallF.rotation.y = Math.PI;
+  wallB.position.set(0, 60, -250);
+  wallF.position.set(0, 60, 250);
+
+  wallGroup.add(wallL, wallR, wallB, wallF);
+
+
+  wallH1 = buildWalls(200, 120, 10, 1);
+  wallH1.rotation.y = Math.PI / 2;
+  wallH2 = wallH1.clone();
+  wallH1.position.set(0, 60, -150);
+  wallH2.position.set(-250, 60, -150);
+  wallH11 = buildWalls(130, 120, 10, 1);
+  wallH11.rotation.y = Math.PI;
+  wallH11.position.set(-130, 60, -120);
+  wallH12 = buildWalls(500, 120, 10, 1);
+  wallH12.rotation.y = Math.PI;
+  wallH12.position.set(-75, 60, 120);
+  wallH3 = buildWalls(65, 120, 10, 1);
+  wallH4 = wallH3.clone();
+  wallH3.position.set(-222.5, 60, -50);
+  wallH4.position.set(-27.5, 60, -50);
+
+  wallGroup.add(wallH1, wallH2, wallH3, wallH4, wallH11, wallH12);
+
+
+  wallMid = buildWalls(150, 120, 10, 1);
+  wallMid.position.set(250, 60, -55);
+  wallMid1 = buildWalls(100, 120, 10, 1);
+  wallMid1.position.set(300, 60, 120);
+  wallMid2 = buildWalls(100, 120, 10, 1);
+  wallMid2.position.set(350, 60, 75);
+  wallMid2.rotation.y = Math.PI / 2;
+  wall1 = buildWalls(130, 120, 10, 1);
+  wall1.rotation.y = Math.PI / 2;
+  wall2 = buildWalls(180, 120, 10, 1);
+  wall1.position.set(-160, 60, 185);
+  wall2.position.set(170, 60, 30);
+  wall2.rotation.y = Math.PI / 2;
+  wallGroup.add(wallMid, wallMid1, wallMid2, wall1, wall2);
+
+  //kick plates
+  kick = new THREE.Mesh(new THREE.BoxGeometry(500, 10, 2), new THREE.MeshLambertMaterial({
+    color: 0x2f160f
+  }));
+  kick.position.set(-500, 5, 0);
+  kick.rotation.y = Math.PI / 2;
+  kick1 = kick.clone();
+  kick1.position.set(500, 5, 0);
+  kick2 = new THREE.Mesh(new THREE.BoxGeometry(1000, 10, 2), new THREE.MeshLambertMaterial({
+    color: 0x2f160f
+  }));
+  kick2.position.set(0, 5, -250);
+  kick3 = kick2.clone();
+  kick3.position.set(0, 5, 250);
+  wallGroup.add(kick, kick1, kick2, kick3);
+  scene.add(wallGroup);
+}
+//draw
+picture1 = buildDraws(50, 60, 5, "https://i.imgur.com/mEixUCr.jpg");
+picture1.position.set(-130, 80, -250);
+picture2 = buildDraws(50, 60, 5, "https://i.imgur.com/twTjzQY.jpg");
+picture2.position.set(-500, 80, 180);
+picture2.rotation.y = Math.PI / 2;
+picture3 = buildDraws(50, 60, 5, "https://i.imgur.com/Wy4dS1Q.jpg");
+picture3.position.set(-500, 80, -150);
+picture3.rotation.y = Math.PI / 2;
+picture4 = buildDraws(50, 60, 5, "https://i.imgur.com/y7T44sc.jpg");
+picture4.position.set(-500, 80, 30);
+picture4.rotation.y = Math.PI / 2;
+picture5 = buildDraws(50, 60, 5, "https://i.imgur.com/3V4heZe.jpg");
+picture5.position.set(-380, 85, -250);
+picture6 = buildDraws(50, 60, 5, "https://i.imgur.com/lJSgJ5Q.jpg");
+picture6.position.set(100, 80, -250);
+picture7 = buildDraws(50, 60, 5, "https://i.imgur.com/2ETD70J.jpgg");
+picture7.position.set(250, 80, -60);
+picture7.rotation.set(0, Math.PI, Math.PI / 2);
+picture8 = buildDraws(50, 60, 5, "https://i.imgur.com/po146Qp.jpg");
+picture8.position.set(180, 80, 30);
+picture8.rotation.y = Math.PI / 2;
+picture9 = buildDraws(50, 60, 5, "https://i.imgur.com/Fl820Z8.jpg");
+picture9.position.set(450, 80, -250);
+picture10 = buildDraws(70, 60, 5, "https://i.imgur.com/UJ8yCrl.jpg");
+picture10.position.set(75, 85, 130);
+scene.add(picture1, picture2, picture3, picture4, picture5, picture6, picture7, picture8, picture9, picture10);
+
+//spotlightLine
+spotLightline1 = buildSpotlightLine(2, 2, 50, 32);
+spotLightline1.position.set(-130, 120, -235);
+spotLightline1.rotation.z = Math.PI / 2;
+spotLightline2 = buildSpotlightLine(2, 2, 450, 32);
+spotLightline2.position.set(-480, 120, -10);
+spotLightline2.rotation.set(0, Math.PI / 2, Math.PI / 2);
+spotLightline3 = spotLightline1.clone();
+spotLightline3.position.set(-380, 120, -235);
+spotLightline4 = buildSpotlightLine(2, 2, 420, 32);
+spotLightline4.position.set(280, 120, -235);
+spotLightline4.rotation.z = Math.PI / 2;
+spotLightline5 = spotLightline1.clone();
+spotLightline5.position.set(250, 120, -80);
+spotLightline6 = spotLightline1.clone();
+spotLightline6.position.set(75, 120, 150);
+spotLightline7 = spotLightline1.clone();
+spotLightline7.position.set(200, 120, 30);
+spotLightline7.rotation.set(0, Math.PI / 2, Math.PI / 2);
+scene.add(spotLightline1, spotLightline2, spotLightline3, spotLightline4, spotLightline5, spotLightline6, spotLightline7);
+
+///spotlight
+
+spotlight1 = new Lamps(80, 115, 150, 2, picture10, 10);
+spotlight2 = new Lamps(-130, 115, -237, 2, picture1, 1);
+spotlight3 = new Lamps(-480, 115, 180, 2, picture2, 2);
+spotlight4 = new Lamps(-480, 115, -150, 2, picture3, 3);
+spotlight5 = new Lamps(-480, 115, 30, 2, picture4, 4);
+spotlight6 = new Lamps(-380, 116, -237, 2, picture5, 5);
+spotlight7 = new Lamps(100, 116, -237, 2, picture6, 6);
+spotlight8 = new Lamps(250, 116, -80, 2, picture7, 7);
+spotlight9 = new Lamps(200, 116, 30, 2, picture8, 8);
+spotlight10 = new Lamps(450, 116, -237, 2, picture9, 9);
+
+function buildFloor() {
+  var FloorGroup = new THREE.Group();
+  let woodTex = new THREE.TextureLoader().load("https://i.imgur.com/XWxKmKW.jpg");
+  let mat = new THREE.MeshLambertMaterial({
+    side: THREE.DoubleSide,
+    map: woodTex
+  });
+  var floorTop = new THREE.Mesh(new THREE.PlaneGeometry(1000, 500, 130, 130), mat);
+  floorTop.rotation.x = -Math.PI / 2;
+  FloorGroup.add(floorTop);
+  return FloorGroup;
+
+}
+
+function buildWalls(w, h, d, style) {
+  let wall;
+  if (style === 1) {
+    wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({
+
+      color: 0xFFF3EE
+    }));
+  }
+  if (style === 2) {
+    wall = new THREE.Mesh(new THREE.PlaneGeometry(w, h, d), new THREE.MeshLambertMaterial({
+      color: 0xFFF3EE
+    }));
+  }
+  return wall;
+}
+
+function buildChair() {
+  var ChairGroup = new THREE.Group();
+  var woodTex = new THREE.TextureLoader().load("https://i.imgur.com/DrvlmNW.jpg?1");
+  var mat = new THREE.MeshLambertMaterial({
+    map: woodTex
+  });
+  var boxTop = new THREE.Mesh(new THREE.BoxGeometry(95, 10, 40), mat);
+  var boxLeg1 = new THREE.Mesh(new THREE.BoxGeometry(10, 22, 30), mat);
+  var boxLeg2 = new THREE.Mesh(new THREE.BoxGeometry(10, 22, 30), mat);
+  boxTop.position.set(0, 25, 0);
+  boxLeg1.position.set(-30.5, 12, 0);
+  boxLeg2.position.set(30.5, 12, 0);
+  ChairGroup.add(boxTop, boxLeg1, boxLeg2);
+
+  return ChairGroup;
+}
+
+function buildDraws(w, h, d, Link) {
+  var DGroup = new THREE.Group();
+  let Imag = new THREE.TextureLoader().load(Link);
+  let mat = new THREE.MeshLambertMaterial({
+    map: Imag,
+    polygonOffset: true,
+    polygonOffsetFactor: -1.0,
+    polygonOffsetUnits: -4.0,
+
+  });
+  var draws = new THREE.Mesh(new THREE.PlaneGeometry(w, h, d), mat);
+
+  let frameMap = new THREE.TextureLoader().load('https://i.imgur.com/G9vmqhZ.png');
+  let frame = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({
+    map: frameMap,
+    transparent: true
+  }));
+  DGroup.add(draws, frame);
+
+  return DGroup;
+
+}
+
+function buildSpotlightLine(rt, rb, h, rs) {
+  let line;
+  line = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, rs), new THREE.MeshLambertMaterial({
+    color: 0x888888
+  }));
+  return line;
+}
+
+function update() {
+
+  keyboard.update();
+
+  if (vel.length() > 0) {
+    angle = 1.5 * Math.PI + Math.atan2(vel.x, vel.z);
+  }
+
+  if (keyboard.pressed("space"))
+    power = 0.1;
+  if (keyboard.pressed("up"))
+    camera3rd.translateZ(-1);
+  if (keyboard.pressed("down"))
+    camera3rd.translateZ(1);
+
+  //power = Math.clamp(power, 0, 80.0);
+
+
+  //angle_thrust = angle;
+  if (keyboard.pressed("left")) {
+    camera3rd.translateX(-1);
+
+  }
+
+  if (keyboard.pressed("right")) {
+    camera3rd.translateX(1);
+
+  }
+  if (keyboard.pressed("L")) {
+    camera3rd.rotation.y += 0.01;
+  }
+  if (keyboard.pressed("R")) {
+    camera3rd.rotation.y -= 0.01;
+  }
+
+
+  // car.rotation.y= angle_thrust;
+
+  // compute force
+  /*var thrust = new THREE.Vector3(1, 0, 0).multiplyScalar(power).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle_thrust);
+  force.copy(thrust);
+  force.add(vel.clone().multiplyScalar(-2))
+
+  // eulers
+  vel.add(force.clone().multiplyScalar(dt));
+  pos.add(vel.clone().multiplyScalar(dt));*/
+}
+
+function animate() {
+  update();
+
+  requestAnimationFrame(animate);
+  if (use3rd)
+    renderer.render(scene, camera3rd);
+  else
+    renderer.render(scene, camera);
+
+
+}
+
+
+</script>
+</body>
+
+</html>
