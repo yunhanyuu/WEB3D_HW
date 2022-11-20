@@ -28,6 +28,21 @@
 <input type=range min=0 max=10 id='LightPower'>亮度</button>
 <button id='switch'>use3rd
 </button>
+<select id="draw" name="draw">
+  <option value=0>全景</option>
+  <optgroup label="世界名畫">
+    <option value=1>Minions Madonna</option>
+    <option value=2>Millet Potato Planters</option>
+    <option value=3> Marge Simpson in the Garden at Giverny</option>
+    <option value=4>Girl carrying water </option>
+    <option value=5>Marge Simpson with a Pearl Earring </option>
+    <option value=6>Mona Bean </option>
+    <option value=7>The Starry Night </option>
+    <option value=8>The Scream by Squidward </option>
+    <option value=9>The Anatomy Lesson of Big Bird </option>
+    <option value=10>The Scream by Squidward-2 </option>
+  </optgroup>
+</select>
 <script src="https://threejs.org/build/three.min.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
@@ -42,20 +57,15 @@
 <script>
 var camera3rd, use3rd = true;
 var keyboard = new KeyboardState();
-var pos = new THREE.Vector3();
-var vel = new THREE.Vector3();
-var force = new THREE.Vector3();
-var power, angle;
-var clock;
-var angle_thrust;
-var _status = true;
-var LightGroup = new THREE.Group();
-/*(function() {
-  Math.clamp = function(val, min, max) {
-    return Math.min(Math.max(val, min), max);
 
-  }
-})();*/
+var looking;
+var _status = true;
+
+var lPosition = new THREE.Vector3(),
+  pStand = new THREE.Vector3(150, 500, 1000);
+var alpha = 0;
+
+
 $('#LightPower1').click(function() {
 
   _status = !_status;
@@ -97,10 +107,10 @@ class Lamps {
       });
       var PointLightLamp = new THREE.Mesh(geometry, material);
       PointLightLamp.position.set(this.x, this.y, this.z);
-      
+
       scene.add(PointLightLamp);
 
-      
+
 
     } else if (style === 2) {
       this.Light = new THREE.SpotLight(0xfbe7b4, 1, 110, Math.PI / 2, 1);
@@ -192,9 +202,115 @@ function init() {
   //renderer.shadowMap.type = THREE.PCFShadowMap;
   var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-  controls.enableKeys = false;
+  // controls.enableKeys = false;
   document.body.appendChild(renderer.domElement);
-  
+
+  $("#draw").change(function() {
+    looking = ($(this).val());
+    console.log(looking);
+    alpha = 0;
+    tmpAlpha = 0;
+    check = false;
+
+    switch ($(this).val()) {
+      case "0":
+        pStand = new THREE.Vector3(150, 500, 1000);
+        lPosition = new THREE.Vector3(0, 0, 0);
+        // camera.position.set(150, 500, 1000);
+        //camera.lookAt(0, 0, 0);
+        break;
+
+      case "1":
+        pStand = new THREE.Vector3(-400, 80, 180);
+        lPosition = new THREE.Vector3(-500, 80, 180);
+        // camera.position.set(-400, 80, 180);
+        // camera.lookAt(-500, 80, 180);
+
+        break;
+
+      case "2":
+        pStand = new THREE.Vector3(-400, 80, 30);
+        lPosition = new THREE.Vector3(-500, 80, 30);
+        // camera.position.set(-400, 80, 30);
+        // camera.lookAt(-500, 80, 30);
+
+        break;
+
+      case "3":
+        pStand = new THREE.Vector3(-400, 80, -150);
+        lPosition = new THREE.Vector3(-500, 80, -150);
+        // camera.position.set(-400, 80, -150);
+        // camera.lookAt(-500, 80, -150);
+        break;
+
+      case "4":
+        pStand = new THREE.Vector3(-380, 85, -150);
+        lPosition = new THREE.Vector3(-380, 85, -250);
+        // camera.position.set(-380, 85, -150);
+        //camera.lookAt(-380, 85, -250);
+
+        break;
+
+      case "5":
+        pStand = new THREE.Vector3(-130, 80, -150);
+        lPosition = new THREE.Vector3(-130, 80, -250);
+        // camera.position.set(-130, 80, -150);
+        // camera.lookAt(-130, 80, -250);
+        break;
+
+      case "6":
+        pStand = new THREE.Vector3(100, 80, -150);
+        lPosition = new THREE.Vector3(100, 80, -250);
+        // camera.position.set(100, 80, -150);
+        // camera.lookAt(100, 80, -250);
+        break;
+
+      case "7":
+        pStand = new THREE.Vector3(250, 80, -180);
+        lPosition = new THREE.Vector3(250, 80, -60);
+        //  camera.position.set(250, 80, -180);
+        // camera.lookAt(250, 80, -60);
+        break;
+
+      case "8":
+        pStand = new THREE.Vector3(450, 80, -130);
+        lPosition = new THREE.Vector3(450, 80, -250);
+        //  camera.position.set(450, 80, -130);
+        //  camera.lookAt(450, 80, -250);
+        break;
+
+      case "9":
+        pStand = new THREE.Vector3(300, 80, 30);
+        lPosition = new THREE.Vector3(180, 80, 30);
+        // camera.position.set(300, 80, 30);
+        //  camera.lookAt(180, 80, 30);
+        break;
+      case "10":
+        pStand = new THREE.Vector3(75, 85, 250);
+        lPosition = new THREE.Vector3(75, 85, 130);
+        //  camera.position.set(75, 85, 250);
+        //  camera.lookAt(75, 85, 130);
+
+    }
+    console.log(pStand, lPosition);
+  });
+
+  //helper
+  helper = CameraMoveHelper(1, 1, 1);
+  helper1 = helper.clone();
+  helper1.position.set(-400, 80, 30);
+
+  helper2 = helper.clone();
+  helper2.position.set(200, 80, 80);
+
+  helper3 = helper.clone();
+  helper3.position.set(-200, 80, -150);
+
+  helper4 = helper.clone();
+  helper4.position.set(450, 80, -130);
+
+  helper5 = helper.clone();
+  helper5.position.set(280, 85, 250);
   ///light
 
   let sunLight = new THREE.DirectionalLight(0xffffff, 0.6); // color, intensity, distance, decay
@@ -321,68 +437,72 @@ function init() {
   kick3.position.set(0, 5, 250);
   wallGroup.add(kick, kick1, kick2, kick3);
   scene.add(wallGroup);
+
+  //draw
+  picture1 = buildDraws(50, 60, 5, "https://i.imgur.com/mEixUCr.jpg");
+  picture1.position.set(-130, 80, -250);
+  picture2 = buildDraws(50, 60, 5, "https://i.imgur.com/twTjzQY.jpg");
+  picture2.position.set(-500, 80, 180);
+  picture2.rotation.y = Math.PI / 2;
+  picture3 = buildDraws(50, 60, 5, "https://i.imgur.com/Wy4dS1Q.jpg");
+  picture3.position.set(-500, 80, -150);
+  picture3.rotation.y = Math.PI / 2;
+  picture4 = buildDraws(50, 60, 5, "https://i.imgur.com/y7T44sc.jpg");
+  picture4.position.set(-500, 80, 30);
+  picture4.rotation.y = Math.PI / 2;
+  picture5 = buildDraws(50, 60, 5, "https://i.imgur.com/3V4heZe.jpg");
+  picture5.position.set(-380, 85, -250);
+  picture6 = buildDraws(50, 60, 5, "https://i.imgur.com/lJSgJ5Q.jpg");
+  picture6.position.set(100, 80, -250);
+  picture7 = buildDraws(50, 60, 5, "https://i.imgur.com/2ETD70J.jpgg");
+  picture7.position.set(250, 80, -60);
+  picture7.rotation.set(0, Math.PI, 0);
+  picture8 = buildDraws(50, 60, 5, "https://i.imgur.com/po146Qp.jpg");
+  picture8.position.set(180, 80, 30);
+  picture8.rotation.y = Math.PI / 2;
+  picture9 = buildDraws(50, 60, 5, "https://i.imgur.com/Fl820Z8.jpg");
+  picture9.position.set(450, 80, -250);
+  picture10 = buildDraws(70, 60, 5, "https://i.imgur.com/UJ8yCrl.jpg");
+  picture10.position.set(75, 85, 130);
+  scene.add(picture1, picture2, picture3, picture4, picture5, picture6, picture7, picture8, picture9, picture10);
+
+  //spotlightLine
+  spotLightline1 = buildSpotlightLine(2, 2, 50, 32);
+  spotLightline1.position.set(-130, 120, -235);
+  spotLightline1.rotation.z = Math.PI / 2;
+  spotLightline2 = buildSpotlightLine(2, 2, 450, 32);
+  spotLightline2.position.set(-480, 120, -10);
+  spotLightline2.rotation.set(0, Math.PI / 2, Math.PI / 2);
+  spotLightline3 = spotLightline1.clone();
+  spotLightline3.position.set(-380, 120, -235);
+  spotLightline4 = buildSpotlightLine(2, 2, 420, 32);
+  spotLightline4.position.set(280, 120, -235);
+  spotLightline4.rotation.z = Math.PI / 2;
+  spotLightline5 = spotLightline1.clone();
+  spotLightline5.position.set(250, 120, -80);
+  spotLightline6 = spotLightline1.clone();
+  spotLightline6.position.set(75, 120, 150);
+  spotLightline7 = spotLightline1.clone();
+  spotLightline7.position.set(200, 120, 30);
+  spotLightline7.rotation.set(0, Math.PI / 2, Math.PI / 2);
+  scene.add(spotLightline1, spotLightline2, spotLightline3, spotLightline4, spotLightline5, spotLightline6, spotLightline7);
+
+  ///spotlight
+
+  spotlight1 = new Lamps(80, 115, 150, 2, picture10, 10);
+  spotlight2 = new Lamps(-130, 115, -237, 2, picture1, 1);
+  spotlight3 = new Lamps(-480, 115, 180, 2, picture2, 2);
+  spotlight4 = new Lamps(-480, 115, -150, 2, picture3, 3);
+  spotlight5 = new Lamps(-480, 115, 30, 2, picture4, 4);
+  spotlight6 = new Lamps(-380, 116, -237, 2, picture5, 5);
+  spotlight7 = new Lamps(100, 116, -237, 2, picture6, 6);
+  spotlight8 = new Lamps(250, 116, -80, 2, picture7, 7);
+  spotlight9 = new Lamps(200, 116, 30, 2, picture8, 8);
+  spotlight10 = new Lamps(450, 116, -237, 2, picture9, 9);
+
 }
-//draw
-picture1 = buildDraws(50, 60, 5, "https://i.imgur.com/mEixUCr.jpg");
-picture1.position.set(-130, 80, -250);
-picture2 = buildDraws(50, 60, 5, "https://i.imgur.com/twTjzQY.jpg");
-picture2.position.set(-500, 80, 180);
-picture2.rotation.y = Math.PI / 2;
-picture3 = buildDraws(50, 60, 5, "https://i.imgur.com/Wy4dS1Q.jpg");
-picture3.position.set(-500, 80, -150);
-picture3.rotation.y = Math.PI / 2;
-picture4 = buildDraws(50, 60, 5, "https://i.imgur.com/y7T44sc.jpg");
-picture4.position.set(-500, 80, 30);
-picture4.rotation.y = Math.PI / 2;
-picture5 = buildDraws(50, 60, 5, "https://i.imgur.com/3V4heZe.jpg");
-picture5.position.set(-380, 85, -250);
-picture6 = buildDraws(50, 60, 5, "https://i.imgur.com/lJSgJ5Q.jpg");
-picture6.position.set(100, 80, -250);
-picture7 = buildDraws(50, 60, 5, "https://i.imgur.com/2ETD70J.jpgg");
-picture7.position.set(250, 80, -60);
-picture7.rotation.set(0, Math.PI, 0);
-picture8 = buildDraws(50, 60, 5, "https://i.imgur.com/po146Qp.jpg");
-picture8.position.set(180, 80, 30);
-picture8.rotation.y = Math.PI / 2;
-picture9 = buildDraws(50, 60, 5, "https://i.imgur.com/Fl820Z8.jpg");
-picture9.position.set(450, 80, -250);
-picture10 = buildDraws(70, 60, 5, "https://i.imgur.com/UJ8yCrl.jpg");
-picture10.position.set(75, 85, 130);
-scene.add(picture1, picture2, picture3, picture4, picture5, picture6, picture7, picture8, picture9, picture10);
 
-//spotlightLine
-spotLightline1 = buildSpotlightLine(2, 2, 50, 32);
-spotLightline1.position.set(-130, 120, -235);
-spotLightline1.rotation.z = Math.PI / 2;
-spotLightline2 = buildSpotlightLine(2, 2, 450, 32);
-spotLightline2.position.set(-480, 120, -10);
-spotLightline2.rotation.set(0, Math.PI / 2, Math.PI / 2);
-spotLightline3 = spotLightline1.clone();
-spotLightline3.position.set(-380, 120, -235);
-spotLightline4 = buildSpotlightLine(2, 2, 420, 32);
-spotLightline4.position.set(280, 120, -235);
-spotLightline4.rotation.z = Math.PI / 2;
-spotLightline5 = spotLightline1.clone();
-spotLightline5.position.set(250, 120, -80);
-spotLightline6 = spotLightline1.clone();
-spotLightline6.position.set(75, 120, 150);
-spotLightline7 = spotLightline1.clone();
-spotLightline7.position.set(200, 120, 30);
-spotLightline7.rotation.set(0, Math.PI / 2, Math.PI / 2);
-scene.add(spotLightline1, spotLightline2, spotLightline3, spotLightline4, spotLightline5, spotLightline6, spotLightline7);
 
-///spotlight
-
-spotlight1 = new Lamps(80, 115, 150, 2, picture10, 10);
-spotlight2 = new Lamps(-130, 115, -237, 2, picture1, 1);
-spotlight3 = new Lamps(-480, 115, 180, 2, picture2, 2);
-spotlight4 = new Lamps(-480, 115, -150, 2, picture3, 3);
-spotlight5 = new Lamps(-480, 115, 30, 2, picture4, 4);
-spotlight6 = new Lamps(-380, 116, -237, 2, picture5, 5);
-spotlight7 = new Lamps(100, 116, -237, 2, picture6, 6);
-spotlight8 = new Lamps(250, 116, -80, 2, picture7, 7);
-spotlight9 = new Lamps(200, 116, 30, 2, picture8, 8);
-spotlight10 = new Lamps(450, 116, -237, 2, picture9, 9);
 
 function buildFloor() {
   var FloorGroup = new THREE.Group();
@@ -413,6 +533,7 @@ function buildWalls(w, h, d, style) {
   }
   return wall;
 }
+
 
 function buildChair() {
   var ChairGroup = new THREE.Group();
@@ -462,13 +583,26 @@ function buildSpotlightLine(rt, rb, h, rs) {
   return line;
 }
 
+function CameraMoveHelper(w, h, d) {
+
+  var MoveHelper = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({
+    color: 0x00ff00
+  }));
+
+  return MoveHelper;
+}
+
+function clamp(v, lo, hi) {
+  if (v < lo) return lo;
+  if (v > hi) return hi;
+  return v;
+}
+
 function update() {
 
   keyboard.update();
 
-  if (vel.length() > 0) {
-    angle = 1.5 * Math.PI + Math.atan2(vel.x, vel.z);
-  }
+
 
   if (keyboard.pressed("space"))
     power = 0.1;
@@ -477,10 +611,7 @@ function update() {
   if (keyboard.pressed("down"))
     camera3rd.translateZ(1);
 
-  //power = Math.clamp(power, 0, 80.0);
 
-
-  //angle_thrust = angle;
   if (keyboard.pressed("left")) {
     camera3rd.translateX(-1);
 
@@ -498,17 +629,10 @@ function update() {
   }
 
 
-  // car.rotation.y= angle_thrust;
 
-  // compute force
-  /*var thrust = new THREE.Vector3(1, 0, 0).multiplyScalar(power).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle_thrust);
-  force.copy(thrust);
-  force.add(vel.clone().multiplyScalar(-2))
-
-  // eulers
-  vel.add(force.clone().multiplyScalar(dt));
-  pos.add(vel.clone().multiplyScalar(dt));*/
 }
+
+
 
 function animate() {
   update();
@@ -516,11 +640,23 @@ function animate() {
   requestAnimationFrame(animate);
   if (use3rd)
     renderer.render(scene, camera3rd);
-  else
+  else {
     renderer.render(scene, camera);
+
+    alpha += 0.0005;
+    alpha = clamp(alpha, 0, 1);
+
+
+    camera.position.lerpVectors(camera.position, pStand, alpha);
+    camera.quaternion.slerpQuaternions(camera.quaternion, camera.lookAt(lPosition), alpha);
+
+
+
+  }
 
 
 }
+
 
 
 </script>
