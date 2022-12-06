@@ -48,7 +48,11 @@
     <input type=radio class='oclass' name='o' value='table'>table
 	<br>
     <img src="https://i.imgur.com/N6hbbOC.png" width="50%" height="25%" object-fit="cover" id='pic1'>
-    
+	<br>
+    <input type=radio class='oclass' name='o' value='bush'>bush
+	<br>
+    <img src="https://i.imgur.com/mWDPI5Y.png" width="50%" height="25%" object-fit="cover" id='pic2'>
+	<br>
   </div>
   <br>
   <button id='clear' style="width:45%">Clear</button>
@@ -61,14 +65,13 @@
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 
 
+
 <script>
 var camera, scene, renderer, controls;
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var puck;
 var cyl;
-var tables = [];
-var chairs = [];
 var plane;
 var placing = true;
 var moving = false;
@@ -76,13 +79,13 @@ var delet = false;
 var rotating = false;
 var chair = true;
 var table = false;
-//var bush = false;
+var bush = false;
 var pucks = [];
 var thePuck;
 var pchair, ptable, pbush;
 var lightstatus = false,
   pointlights;
-
+//var counts = 0;
 init();
 animate();
 
@@ -105,16 +108,16 @@ $('.gclass').click(function() {
     placing = false;
     delet = false;
     rotating = false;
-  }else if ($(this).val() === 'rotate') {
+  } else if ($(this).val() === 'rotate') {
     moving = false;
     placing = false;
     delet = false;
     rotating = true;
-  }else {
+  } else {
     delet = true;
     placing = false;
     moving = false;
-     rotating = false;
+    rotating = false;
   } // delete
 
 });
@@ -123,16 +126,15 @@ $('.oclass').click(function() {
   if ($(this).val() === 'chair') {
     chair = true;
     table = false;
-    //bush = false;
+    bush = false;
   } else if ($(this).val() === 'table') {
     chair = false;
     table = true;
-   // bush = false;
-  } 
-   else {
+    bush = false;
+  } else {
     chair = false;
     table = false;
-   // bush = true;
+    bush = true;
   }
 
 });
@@ -153,16 +155,14 @@ $('#save').click(function() {
   // pucks --> puckRecs
   var recs = [];
   // var count=0;
-  
   for (let i = 0; i < pucks.length; i++) {
     var rec = {};
-
     rec.name = pucks[i].name;
     rec.x = pucks[i].position.x.toFixed(2);
     rec.z = pucks[i].position.z.toFixed(2);
     rec.rotation = pucks[i].rotation.y.toFixed(2);
     recs.push(rec);
-	console.log(pucks[i].rotation);
+   // console.log(pucks[i].rotation);
   }
 
   // puckRecs --> JSON.stringify --> localStorage
@@ -177,18 +177,24 @@ $('#save').click(function() {
 $('#restore').click(function() {
 
   var states = JSON.parse(localStorage.getItem('puckLog'));
- 
- // console.log(states);
+
+  //console.log(states);
   for (let i = 0; i < states.length; i++) {
-    //console.log(states[i].name);
+   // console.log(states[i].name);
     if (states[i].name === '1') {
       var newPuck = pchair.clone();
       newPuck.position.set(states[i].x, 0, states[i].z);
       newPuck.rotation.y = states[i].rotation;
       scene.add(newPuck);
       pucks.push(newPuck);
-    } else {
+    } else if (states[i].name === '2') {
       var newPuck = ptable.clone();
+      newPuck.position.set(states[i].x, 0, states[i].z);
+      newPuck.rotation.y = states[i].rotation;
+      scene.add(newPuck);
+      pucks.push(newPuck);
+    } else {
+      var newPuck = pbush.clone();
       newPuck.position.set(states[i].x, 0, states[i].z);
       newPuck.rotation.y = states[i].rotation;
       scene.add(newPuck);
@@ -217,9 +223,8 @@ function buildChair() {
   var chairWood = new THREE.Mesh(new THREE.BoxGeometry(20, 10, 20), mesh);
   var chairCushion = new THREE.Mesh(new THREE.CylinderGeometry(8.5, 8.5, 2, 32), mesh1);
   var chairCushion1 = new THREE.Mesh(new THREE.BoxGeometry(15, 15, 1), mesh1);
-  
-  var back =  new THREE.Mesh(new THREE.BoxGeometry(1,1 , 10),mesh);
-  var back1 = new THREE.Mesh(new THREE.BoxGeometry(1,1 , 17),mesh);
+  var back = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 10), mesh);
+  var back1 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 17), mesh);
   var back2 = back.clone();
   var handrail1 = back.clone();
   var handrail2 = back.clone();
@@ -229,27 +234,27 @@ function buildChair() {
   var L2 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 3), mesh2);
   var L3 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 3), mesh2);
   var L4 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 3), mesh2);
-  
+
   chairWood.position.y = 6;
   chairCushion.position.set(0, 11, 1);
   chairCushion1.position.set(0, 14, -8);
-  back.position.set(-9,12,-9);
-  back.rotation.x=(Math.PI/2);
-  back1.position.set(0,16.5,-9);
-  back1.rotation.y=(Math.PI/2);
-  back2.position.set(9,12,-9);
-  back2.rotation.x=(Math.PI/2);
-  handrail1.position.set(-9,12,9);
-  handrail1.rotation.x=(Math.PI/2);
-  handrail2.position.set(9,12,9);
-  handrail2.rotation.x=(Math.PI/2);
-  handrail3.position.set(-9,16.5,0);
-  handrail4.position.set(9,16.5,0);
+  back.position.set(-9, 12, -9);
+  back.rotation.x = (Math.PI / 2);
+  back1.position.set(0, 16.5, -9);
+  back1.rotation.y = (Math.PI / 2);
+  back2.position.set(9, 12, -9);
+  back2.rotation.x = (Math.PI / 2);
+  handrail1.position.set(-9, 12, 9);
+  handrail1.rotation.x = (Math.PI / 2);
+  handrail2.position.set(9, 12, 9);
+  handrail2.rotation.x = (Math.PI / 2);
+  handrail3.position.set(-9, 16.5, 0);
+  handrail4.position.set(9, 16.5, 0);
   L1.position.set(8, 1, 8);
   L2.position.set(-8, 1, 8);
   L3.position.set(-8, 1, -8);
   L4.position.set(8, 1, -8);
-  chairGroup.add(chairWood, chairCushion,chairCushion1, back,back1,back2,handrail1,handrail2,handrail3,handrail4,L1, L2, L3, L4);
+  chairGroup.add(chairWood, chairCushion, chairCushion1, back, back1, back2, handrail1, handrail2, handrail3, handrail4, L1, L2, L3, L4);
   return chairGroup;
 }
 
@@ -269,7 +274,6 @@ function buildTable() {
     map: Map2
   });
   var tableWood = new THREE.Mesh(new THREE.BoxGeometry(40, 1, 20), mesh);
-
   var L1 = new THREE.Mesh(new THREE.BoxGeometry(2, 10, 2), mesh2);
   var L2 = new THREE.Mesh(new THREE.BoxGeometry(2, 10, 2), mesh2);
   var L3 = new THREE.Mesh(new THREE.BoxGeometry(2, 10, 2), mesh2);
@@ -277,7 +281,7 @@ function buildTable() {
   var L5 = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 2), mesh2);
   var L6 = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 2), mesh2);
 
- tableWood.position.y = 9;
+  tableWood.position.y = 9;
   L1.position.set(17, 4, 5);
   L2.position.set(-17, 4, 5);
   L3.position.set(-17, 4, -5);
@@ -286,9 +290,36 @@ function buildTable() {
   L6.rotation.x = (Math.PI / 2);
   L5.position.set(-17, 1, 0);
   L6.position.set(17, 1, 0);
-  tableGroup.add(tableWood,L1, L2, L3, L4, L5, L6);
+  tableGroup.add(tableWood, L1, L2, L3, L4, L5, L6);
   return tableGroup;
 
+}
+
+function buildBush() {
+  var loader = new THREE.TextureLoader();
+  var Map = loader.load('https://i.imgur.com/9KXj9TZ.png');
+  var Map1 = loader.load('https://i.imgur.com/gShCL4Q.png');
+  var Map2 = loader.load(' https://i.imgur.com/muECjO6.png');
+  var bushGroup = new THREE.Group();
+  var mesh = new THREE.MeshLambertMaterial({
+    map: Map
+  });
+  var mesh1 = new THREE.MeshLambertMaterial({
+    map: Map1
+  });
+  var mesh2 = new THREE.MeshLambertMaterial({
+    map: Map2
+  });
+  var bush = new THREE.Mesh(new THREE.SphereGeometry(4, 32, 16, 1.18, 6.28, 0, 1.96), mesh);
+  var pot = new THREE.Mesh(new THREE.CylinderGeometry(5, 3, 5, 8), mesh1);
+  var wood = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 3), mesh2);
+  bush.position.y = 9;
+  pot.position.set(0, 3, 0);
+  wood.position.set(0, 7, 0);
+  wood.rotation.x = (Math.PI / 2);
+
+  bushGroup.add(bush, pot, wood);
+  return bushGroup;
 }
 
 function buildFloor() {
@@ -309,8 +340,8 @@ function buildFloor() {
     transparent: true,
     alphaMap: stoneAlpha
   }));
-  grassFloor.rotation.z = Math.PI/2;
-  stoneFloor.rotation.z = Math.PI/2;
+  grassFloor.rotation.z = Math.PI / 2;
+  stoneFloor.rotation.z = Math.PI / 2;
   floorGroup.add(grassFloor, stoneFloor);
   return floorGroup;
 }
@@ -384,15 +415,13 @@ function onDocumentMouseMove(event) {
 
   raycaster.setFromCamera(mouse, camera);
   var intersects = raycaster.intersectObject(plane);
- 
+
   if (intersects.length > 0 && moving === true) {
     controls.enabled = false; // to disable camera movement
     thePuck.position.copy(intersects[0].point);
-  }
-  else {
-   controls.enabled = false;
+  } else {
+    controls.enabled = false;
     thePuck.lookAt(intersects[0].point);
-    
     //console.log(thePuck.rotation);
   }
 }
@@ -410,10 +439,11 @@ function onDocumentMouseDown(event) {
   if (intersects.length > 0) {
     cyl.position.copy(intersects[0].point);
     if (chair === true) {
-      //buildSphere(10, intersects[0].point);
       pchair = buildChair();
     } else if (table === true) {
       ptable = buildTable();
+    } else {
+      pbush = buildBush();
     }
   }
   if (placing === true) { // place
@@ -427,19 +457,20 @@ function onDocumentMouseDown(event) {
         pucks.push(newPuck);
         //chairs.push(newPuck);
         //console.log(newPuck.name);
-        
+
       } else if (table === true) {
         var newPuck = ptable.clone();
         newPuck.position.copy(intersects[0].point);
         scene.add(newPuck);
         newPuck.name = '2';
         pucks.push(newPuck);
-       // console.log(newPuck.name);
-       // tables.push(newPuck);
+        //console.log(newPuck.name);
+        // tables.push(newPuck);
       } else {
-        //var newPuck = pbush.clone();
+        var newPuck = pbush.clone();
         newPuck.position.copy(intersects[0].point);
         scene.add(newPuck);
+        newPuck.name = '3';
         pucks.push(newPuck);
       }
     }
@@ -487,7 +518,7 @@ function animate() {
 
   requestAnimationFrame(animate);
   render();
-  
+
 }
 
 function render() {
