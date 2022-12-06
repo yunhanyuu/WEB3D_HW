@@ -153,14 +153,14 @@ $('#save').click(function() {
   // pucks --> puckRecs
   var recs = [];
   // var count=0;
-  //var rec = {};
+  
   for (let i = 0; i < pucks.length; i++) {
     var rec = {};
 
     rec.name = pucks[i].name;
     rec.x = pucks[i].position.x.toFixed(2);
     rec.z = pucks[i].position.z.toFixed(2);
-    rec.rotation = pucks[i].rotation;
+    rec.rotation = pucks[i].rotation.y.toFixed(2);
     recs.push(rec);
 	console.log(pucks[i].rotation);
   }
@@ -178,19 +178,19 @@ $('#restore').click(function() {
 
   var states = JSON.parse(localStorage.getItem('puckLog'));
  
-  console.log(states);
+ // console.log(states);
   for (let i = 0; i < states.length; i++) {
-    console.log(states[i].name);
+    //console.log(states[i].name);
     if (states[i].name === '1') {
       var newPuck = pchair.clone();
       newPuck.position.set(states[i].x, 0, states[i].z);
-       //newPuck.lookAt(states[i].rotation.x,states[i].rotation.y,states[i].rotation.z);
+      newPuck.rotation.y = states[i].rotation;
       scene.add(newPuck);
       pucks.push(newPuck);
     } else {
       var newPuck = ptable.clone();
       newPuck.position.set(states[i].x, 0, states[i].z);
-      //newPuck.rotation.set(states[i].rotation.x,states[i].rotation.y,states[i].rotation.z);
+      newPuck.rotation.y = states[i].rotation;
       scene.add(newPuck);
       pucks.push(newPuck);
     }
@@ -393,7 +393,7 @@ function onDocumentMouseMove(event) {
    controls.enabled = false;
     thePuck.lookAt(intersects[0].point);
     
-    console.log(thePuck.rotation);
+    //console.log(thePuck.rotation);
   }
 }
 
@@ -426,7 +426,7 @@ function onDocumentMouseDown(event) {
         newPuck.name = '1';
         pucks.push(newPuck);
         //chairs.push(newPuck);
-        console.log(newPuck.name);
+        //console.log(newPuck.name);
         
       } else if (table === true) {
         var newPuck = ptable.clone();
@@ -434,7 +434,7 @@ function onDocumentMouseDown(event) {
         scene.add(newPuck);
         newPuck.name = '2';
         pucks.push(newPuck);
-        console.log(newPuck.name);
+       // console.log(newPuck.name);
        // tables.push(newPuck);
       } else {
         //var newPuck = pbush.clone();
