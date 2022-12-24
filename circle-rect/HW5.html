@@ -24,6 +24,7 @@
 <body>
 		
 <h1 style="font-size:2em; text-align:center; margin:15px"> I3B02尤韻涵 HW5 </h1>
+
 <hr>
 <div id="container" style="float:left; margin:3px; width:60vw; height:60vw">
 </div>
@@ -31,19 +32,21 @@
 <div>
   Radius:
   <input id="radius" type="range" min=1 max=10 value=5>
+  
 </div>
 <br><br><br>
+操作過程:<a href="https://i.imgur.com/acXy9Rp.gifv">操作過程</a>
 <div>
    <button id='start' style="height:50px;width:150px" border-radius: 10px>Start/Pause</button>
   <br>
+  
   
   </div>
   <input type='checkbox' id='sound1' value='sound1' checked>sound
   <audio id="soundtrack" style="display:none">
 <source src="ball.mp3" type='audio/mp3'>
 </audio>
-<br>
-<a href="https://i.imgur.com/acXy9Rp.gifv">操作過程</a>
+
 <script src="https://threejs.org/build/three.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 
@@ -94,11 +97,49 @@ animate();
 function getHit () {
 	// Call api 
 	// Need to be replaced by a public ip address
-	$.get( "http://127.0.0.1:1337/api?radius=" + radius + "&x_center=" + pos.x + "&y_center=" + pos.y + "&x1=" + x1 + "&y1=" + y1 + "&x2=" + x2 + "&y2=" + y2+ "&velX=" + vel.x + "&velY=" + vel.y, function( data ) {
-		if(data && data.output){
-			hit = data.output;
+	$.get("http://127.0.0.1:1337/api?radius=" + radius + "&x_center=" + pos.x + "&y_center=" + pos.y + "&x1=" + x1 + "&y1=" + y1 + "&x2=" + x2 + "&y2=" + y2 + "&velX=" + vel.x + "&velY=" + vel.y, function(data) {
+	  if (data && data.output) {
+	    hit = data.output;
+	   
+	    if (pos.x > 70 || pos.x < -70 ) {
+	      
+		  vel.x *= -1;
+	      colorChange();
+	    }
+	    if (pos.y > 70 || pos.y < -70 ) {
+	      
+		  vel.y *= -1;
+	      colorChange();
+	    }
+
+
+	    if (pos.x > rectangle.position.x - 30 & pos.x < rectangle.position.x + 30) {
+	      if (pos.y + radius1 > rectangle.position.y & pos.y - radius1 < rectangle.position.y + 15 & vel.y < 0) {
+	        vel.y *= -1;
+	        colorChange();
+	      }
+	      if (pos.y + radius1 > rectangle.position.y - 15 & pos.y - radius1 < rectangle.position.y & vel.y > 0) {
+	        vel.y *= -1;
+	        colorChange();
+	      }
+	    }
+
+	    if (pos.y > rectangle.position.y - 15 & pos.y < rectangle.position.y + 15) {
+	      if (pos.x + radius1 > rectangle.position.x & pos.x - radius1 < rectangle.position.x + 30 & vel.x < 0) {
+	        vel.x *= -1;
+	        colorChange();
+	      }
+	      if (pos.x + radius1 > rectangle.position.x - 30 & pos.x - radius1 < rectangle.position.x & vel.x > 0) {
+	        vel.x *= -1;
+	        colorChange();
+	      }
+	    }
+	  
+	  console.log('vel.x:' + vel.x + 'vel.y:' + vel.y);
+	  console.log('pos.x:' + pos.x + 'pos.y:' + pos.y);
 		}
 	});
+
 }
 
 function init() {
@@ -236,37 +277,7 @@ function animate() {
     pos.add(vel.clone().multiplyScalar(dt));
     //console.log(pos);
     //  console.log(vel);
-    if (pos.x > 70 || pos.x < -70) {
-      vel.x *= -1;
-      colorChange();
-    }
-    if (pos.y > 70 || pos.y < -70) {
-      vel.y *= -1;
-      colorChange();
-    }
-
-
-    if (pos.x > rectangle.position.x - 30 & pos.x < rectangle.position.x + 30) {
-      if (pos.y + radius1 > rectangle.position.y & pos.y - radius1 < rectangle.position.y + 15 & vel.y < 0) {
-        vel.y *= -1;
-        colorChange();
-      }
-      if (pos.y + radius1 > rectangle.position.y - 15 & pos.y - radius1 < rectangle.position.y & vel.y > 0) {
-        vel.y *= -1;
-        colorChange();
-      }
-    }
-
-    if (pos.y > rectangle.position.y - 15 & pos.y < rectangle.position.y + 15) {
-      if (pos.x + radius1 > rectangle.position.x & pos.x - radius1 < rectangle.position.x + 30 & vel.x < 0) {
-        vel.x *= -1;
-        colorChange();
-      }
-      if (pos.x + radius1 > rectangle.position.x - 30 & pos.x - radius1 < rectangle.position.x & vel.x > 0) {
-        vel.x *= -1;
-        colorChange();
-      }
-    }
+    
     circle.position.copy(pos);
   }
 

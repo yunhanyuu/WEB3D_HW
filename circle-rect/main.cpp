@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
 		double velY = atof(argv[9]);
 		int hit = checkOverlap(radius, x_center, y_center, x1, y1, x2, y2,velX,velY);
         printf("%d", hit);
+		
     }
     exit(0);
 }

@@ -20,7 +20,7 @@ app.get ('/api', function (req, res) {
 	  console.log('Exit status:', status);
 	  console.log('Program output:', output);
 	  
-	  console.log('circle center:',x_center,y_center);
+	  //console.log('circle center:',x_center,y_center);
 
       var output = {
         status: status,
