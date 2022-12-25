@@ -104,37 +104,39 @@ function getHit () {
 	    if (pos.x > 70 || pos.x < -70 ) {
 	      
 		  vel.x *= -1;
-	      colorChange();
+	      
 	    }
 	    if (pos.y > 70 || pos.y < -70 ) {
 	      
 		  vel.y *= -1;
-	      colorChange();
+	     
 	    }
 
 
-	    if (pos.x > rectangle.position.x - 30 & pos.x < rectangle.position.x + 30) {
+	    if (pos.x > rectangle.position.x - 35 & pos.x < rectangle.position.x + 35) {
 	      if (pos.y + radius1 > rectangle.position.y & pos.y - radius1 < rectangle.position.y + 15 & vel.y < 0) {
-	        vel.y *= -1;
-	        colorChange();
+	      
+	        circle.material.color.set('red');
 	      }
 	      if (pos.y + radius1 > rectangle.position.y - 15 & pos.y - radius1 < rectangle.position.y & vel.y > 0) {
-	        vel.y *= -1;
-	        colorChange();
+	        
+	         circle.material.color.set('red');
 	      }
 	    }
 
-	    if (pos.y > rectangle.position.y - 15 & pos.y < rectangle.position.y + 15) {
+	    if (pos.y > rectangle.position.y - 20 & pos.y < rectangle.position.y + 20) {
 	      if (pos.x + radius1 > rectangle.position.x & pos.x - radius1 < rectangle.position.x + 30 & vel.x < 0) {
-	        vel.x *= -1;
-	        colorChange();
+	        
+	         circle.material.color.set('red');
 	      }
 	      if (pos.x + radius1 > rectangle.position.x - 30 & pos.x - radius1 < rectangle.position.x & vel.x > 0) {
-	        vel.x *= -1;
-	        colorChange();
+	       
+	         circle.material.color.set('red');
 	      }
 	    }
-	  
+	  else{
+	     circle.material.color.set('white');
+	  }
 	  console.log('vel.x:' + vel.x + 'vel.y:' + vel.y);
 	  console.log('pos.x:' + pos.x + 'pos.y:' + pos.y);
 		}
@@ -256,12 +258,12 @@ function bulidcircle(r) {
 
 function colorChange() {
   if (circle.material.color.b === 0){//rgb
-    circle.material.color.set('cyan');
+    circle.material.color.set('white');
 	if(sound1 ===true)
 	soundTrack.play();
 	}
   else{
-    circle.material.color.set('yellow');
+    circle.material.color.set('red');
 	if(sound1 ===true)
 	soundTrack.play();
 	}
